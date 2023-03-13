@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>{% block title %}{% endblock title %}</title>
+<meta charset="utf-8">
+    <meta name="description" content="Tide basic CRUD">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta property="og:title" content="Tide basic CRUD" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    {% block additional_head %}
+    {% endblock additional_head %}
+</head>
+
+<body>
+    {% block content %}
+    {% endblock content %}
+</body>
+
+{% block additional_scripts %}
+{% endblock additional_scripts %}
+</html>
