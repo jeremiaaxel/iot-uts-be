@@ -1,8 +1,8 @@
-use tera::Tera;
+use crate::TEMPLATES;
 use super::mqtt::Mqtt;
 
 #[derive(Clone)]
 pub struct State {
-    pub tera: Tera,
+    pub tera: TEMPLATES,
     pub mqtt: Mqtt,
 }

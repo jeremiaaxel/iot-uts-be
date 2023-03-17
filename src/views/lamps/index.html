@@ -1,0 +1,17 @@
+
+{% extends "layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock title %}
+
+{% block content %}
+<section name="devices-list">
+    {% for device in devices %}
+    <div name="device-item">
+        <h3>{{ device.device_name }}</h3>
+        <a href="{{ device_url|safe }}/{{ device.device_id }}">Open</a>
+    </div>
+    {% endfor %}
+</section>
+{% endblock content %}

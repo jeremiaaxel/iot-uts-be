@@ -1,0 +1,42 @@
+
+{% extends "layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock title %}
+
+{% block content %}
+<section name="led-page">
+    <h2>{{ device_name }}</h2>
+    <button id="lamp-toggle">
+        Off
+    </button>
+</section>
+{% endblock content %}
+
+{% block additional_scripts %}
+<script>
+    $(document).ready(function() {
+        let lampSelector = "#lamp-toggle"
+        function sendLedStatus(selector) {
+            $(selector).click(function(event) {
+                $.ajax({
+                    url: "{{ url|safe }}",
+                    type: "POST",
+                    data: {
+                        id: "{{ device_id }}",
+                        status: $(selector).text()
+                    },
+                    success: function(response) {
+                        $(selector).text(response);
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            });
+        }
+        sendLedStatus(lampSelector);
+    });
+</script>
+{% endblock additional_scripts %}

@@ -10,6 +10,19 @@ mod structs;
 use structs::state::State;
 use structs::mqtt::Mqtt;
 
+use lazy_static::lazy_static;
+
+lazy_static! {
+    #[derive(Clone, Copy)]
+    pub static ref TEMPLATES: Tera = {
+        // Tera
+        let mut tera = Tera::new("src/views/**/*.html")
+                            .expect("Error parsing templates directory");
+        tera.autoescape_on(vec!["html"]);
+        return tera;
+    };
+}
+
 #[async_std::main]
 async fn main() -> tide::Result<()> {
     dotenv::dotenv().ok();
@@ -19,9 +32,7 @@ async fn main() -> tide::Result<()> {
     let mqtt = Mqtt::new();
     mqtt.connect();
     
-    // Tera
-    let mut tera = Tera::new("src/views/*").expect("Error parsing templates directory");
-    tera.autoescape_on(vec!["html"]);
+    let tera = TEMPLATES;
 
     // App
     let state = State { 
