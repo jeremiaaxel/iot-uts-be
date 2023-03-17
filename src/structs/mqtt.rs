@@ -3,10 +3,11 @@ use paho_mqtt as mqtt;
 use tide::log;
 
 #[allow(dead_code)]
-pub(crate) struct Mqtt {
+#[derive(Clone)]
+pub struct Mqtt {
     client_name: String,
     uri: String,
-    port: u16,
+    port: String,
     topic: String,
     client: mqtt::Client,
     qos: i32,
@@ -15,9 +16,11 @@ pub(crate) struct Mqtt {
 #[allow(dead_code)]
 impl Mqtt {
     pub fn new() -> Self {
-        let client_name = String::from("13519188");
-        let uri = String::from("192.168.211.59");
-        let port = 1883;
+        dotenv::dotenv().ok();
+        let client_name = std::env::var("MQTT_CLIENT_NAME").expect("MQTT_CLIENT_NAME not set");
+        let uri = std::env::var("MQTT_URI").expect("MQTT_URI not set");
+        let port = std::env::var("MQTT_PORT").expect("MQTT_PORT not set");
+
         let led_pin = 2;
         let topic = String::from(format!("{client_name}/server_led_state_{led_pin}"));
         let qos: i32 = 0;
@@ -32,7 +35,7 @@ impl Mqtt {
     }
 
     pub fn connect(&self) {
-        log::info!("Connecting to MQTT broker...");
+        log::info!("{}", String::from(format!("Connecting to MQTT broker at... {0}:{1}", self.uri, self.port)));
         let options = mqtt::ConnectOptionsBuilder::new()
             .clean_session(true)
             .finalize();

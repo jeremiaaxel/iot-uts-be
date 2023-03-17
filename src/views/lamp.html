@@ -20,7 +20,7 @@
                 url: "{{ url|safe }}",
                 type: "POST",
                 data: {
-                    lampStatus: $(lampSelector).text()
+                    status: $(lampSelector).text()
                 },
                 success: function(response) {
                     console.log($(lampSelector).text());
