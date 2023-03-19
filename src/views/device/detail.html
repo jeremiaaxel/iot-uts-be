@@ -55,7 +55,7 @@
                     currentTemp = parseInt($(temp).text());
                 }
     
-                let response = publishStatus(newStatus, currentTemp, function(response) {
+                publishStatus(newStatus, currentTemp, function(response) {
                     $(deviceToggleBtn).text(newStatus);
                 });
             });
@@ -70,7 +70,7 @@
                 if (newTemp < 16) {
                     newTemp = 16;
                 }
-                let response = publishStatus(currentStatus, newTemp, function(response) {
+                publishStatus(currentStatus, newTemp, function(response) {
                     $(temp).text(newTemp);
                 });
             });
@@ -84,7 +84,7 @@
                 if (newTemp > 30) {
                     newTemp = 30;
                 }
-                let response = publishStatus(currentStatus, newTemp, function(response) {
+                publishStatus(currentStatus, newTemp, function(response) {
                     $(temp).text(newTemp);
                 });
             });
