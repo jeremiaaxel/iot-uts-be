@@ -1,4 +1,5 @@
 pub mod state;
 pub mod mqtt;
-pub mod lamp;
-pub mod lamp_status;
+pub mod device;
+pub mod device_status;
+pub mod device_body;

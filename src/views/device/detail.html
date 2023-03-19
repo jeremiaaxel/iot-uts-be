@@ -1,0 +1,99 @@
+
+{% extends "layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock title %}
+
+{% block content %}
+<section name="device-page">
+    <h2>{{ device.device_name }}</h2>
+    <button id="device-toggle-btn">
+        Off
+    </button>
+    {% if device.device_type == "AirConditioner" %}
+    <button id="temp-decrease-btn">-</button>
+    <p id="temp">16</p>
+    <button id="temp-increase-btn">+</button>
+    {% endif %}
+</section>
+{% endblock content %}
+
+{% block additional_scripts %}
+<script>
+    $(document).ready(function() {
+        const deviceToggleBtn = "#device-toggle-btn";
+        const temp = "#temp";
+        const tempDecreaseBtn = "#temp-decrease-btn";
+        const tempIncreaseBtn = "#temp-increase-btn";
+
+        // const deviceType = window.location.pathname.trim("/").split("/")[0];
+        const isAircon = "{{ device.device_type}}" == "AirConditioner";
+        function publishStatus(status, temp = null, callback) {
+            $.ajax({
+                url: "{{ url|safe }}",
+                type: "POST",
+                data: {
+                    status: status,
+                    temperature: temp ?? 0,
+                },
+                success: function(response) {
+                    callback(response);
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        function toggleStatus(buttonSelector) {
+            $(buttonSelector).click(function(event) {
+                let currentStatus = $(deviceToggleBtn).text().trim();
+                let newStatus = currentStatus == "Off" ? "On" : "Off";
+                let currentTemp = null;
+                if (isAircon) {
+                    currentTemp = parseInt($(temp).text());
+                }
+    
+                let response = publishStatus(newStatus, currentTemp, function(response) {
+                    $(deviceToggleBtn).text(newStatus);
+                });
+            });
+        }
+        toggleStatus(deviceToggleBtn);
+
+        function decreaseTemp(buttonSelector) {
+            $(buttonSelector).click(function(event) {
+                let currentStatus = $(deviceToggleBtn).text().trim();
+                let currentTemp = parseInt($(temp).text());
+                let newTemp = currentTemp - 1;
+                if (newTemp < 16) {
+                    newTemp = 16;
+                }
+                let response = publishStatus(currentStatus, newTemp, function(response) {
+                    $(temp).text(newTemp);
+                });
+            });
+        }
+
+        function increaseTemp(buttonSelector) {
+            $(buttonSelector).click(function(event) {
+                let currentStatus = $(deviceToggleBtn).text().trim();
+                let currentTemp = parseInt($(temp).text());
+                let newTemp = currentTemp + 1;
+                if (newTemp > 30) {
+                    newTemp = 30;
+                }
+                let response = publishStatus(currentStatus, newTemp, function(response) {
+                    $(temp).text(newTemp);
+                });
+            });
+        }
+
+        if (isAircon) {
+            decreaseTemp(tempDecreaseBtn);
+            increaseTemp(tempIncreaseBtn);
+        }
+    });
+</script>
+{% endblock additional_scripts %}

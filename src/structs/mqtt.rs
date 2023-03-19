@@ -8,7 +8,6 @@ pub struct Mqtt {
     client_name: String,
     uri: String,
     port: String,
-    topic: String,
     client: mqtt::Client,
     qos: i32,
 }
@@ -21,8 +20,6 @@ impl Mqtt {
         let uri = std::env::var("MQTT_URI").expect("MQTT_URI not set");
         let port = std::env::var("MQTT_PORT").expect("MQTT_PORT not set");
 
-        let led_pin = 2;
-        let topic = String::from(format!("{client_name}/server_led_state_{led_pin}"));
         let qos: i32 = 0;
 
         let client_opts = mqtt::CreateOptionsBuilder::new()
@@ -31,7 +28,7 @@ impl Mqtt {
 
         let client = mqtt::Client::new(client_opts).expect("Error creating client");
 
-        return Mqtt { client_name, uri, port, topic, client, qos };
+        return Mqtt { client_name, uri, port, client, qos };
     }
 
     pub fn connect(&self) {
@@ -52,9 +49,10 @@ impl Mqtt {
             .expect("Error disconnecting from MQTT broker");
     }
 
-    pub fn publish(&self, msg: String) {
+    pub fn publish(&self, topic: String, msg: String) {
         log::info!("Publishing message to MQTT broker...");
-        self.client.publish(mqtt::Message::new(self.topic.clone(), msg, self.qos))
+        let full_topic = String::from(format!("{0}/{1}", self.client_name, topic));
+        self.client.publish(mqtt::Message::new(full_topic, msg, self.qos))
             .expect("Error publishing message to MQTT broker");
     }
 
