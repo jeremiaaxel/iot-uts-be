@@ -1,4 +1,4 @@
-use tide::{Request, Response, Body};
+use tide::{Request, Response};
 use tide_tera::{TideTeraExt, context};
 use tide::log;
 
@@ -34,8 +34,7 @@ pub async fn mqtt_publish(mut _req: Request<State>) -> tide::Result {
     
     let topic = String::from(format!("server_{0}_{1}", device.device_type.to_string(), device.device_id));
     
-    log::info!("Device {}|{} status: {}", device.device_type.to_string(), device.device_id, device_status.status);
-    _req.state().mqtt.publish(topic, device_status.to_string());
+    _req.state().mqtt.publish(topic, serde_json::to_string(&device_status)?);
     
     let res = Response::new(200);
     Ok(res)

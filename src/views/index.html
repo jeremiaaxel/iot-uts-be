@@ -5,11 +5,11 @@
 {% endblock title %}
 
 {% block content %}
-<section name="devices-list">
+<section name="devices-list" class="container my-5 d-flex flex-column">
     {% for device in devices %}
-    <div name="device-item">
+    <div name="device-item" class="d-flex flex-row bg-light p-5 mt-4 justify-content-between">
         <h3>{{ device.device_name }}</h3>
-        <a href="{{ device.device_url|safe }}">Open</a>
+        <a class="btn btn-primary" href="{{ device.device_url|safe }}">Open</a>
     </div>
     {% endfor %}
 </section>

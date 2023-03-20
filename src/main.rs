@@ -42,7 +42,7 @@ async fn main() -> tide::Result<()> {
     
     let mut app = tide::with_state(state);
     register_routes(&mut app);
-    let listen_to = "127.0.0.1:8080";
+    let listen_to = std::env::var("WEB_URI").unwrap() + ":" + &std::env::var("WEB_PORT").unwrap();
     app.listen(listen_to).await?;
     
     // App done

@@ -9,6 +9,7 @@ use crate::State;
 
 pub fn register_routes(app: &mut tide::Server<State>) {
     // Other Controller
+    app.at("/public").serve_dir("src/public").expect("Error serving static files");
     app.at("/").get(home_controller::index);
     app.at("/hello_world").get(other_controller::hello_world);
 
