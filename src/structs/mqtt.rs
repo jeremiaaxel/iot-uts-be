@@ -1,4 +1,4 @@
-use mqtt::DisconnectOptions;
+use mqtt::{DisconnectOptions, Message};
 use paho_mqtt as mqtt;
 use tide::log;
 
@@ -8,7 +8,7 @@ pub struct Mqtt {
     client_name: String,
     uri: String,
     port: String,
-    client: mqtt::Client,
+    client: mqtt::AsyncClient,
     qos: i32,
 }
 
@@ -26,44 +26,61 @@ impl Mqtt {
             .server_uri(uri.clone())
             .finalize();
 
-        let client = mqtt::Client::new(client_opts).expect("Error creating client");
+        let client = mqtt::AsyncClient::new(client_opts).expect("Error creating client");
 
         return Mqtt { client_name, uri, port, client, qos };
     }
 
-    pub fn connect(&self) {
+    pub async fn connect(&self) {
         log::info!("{}", String::from(format!("Connecting to MQTT broker at... {0}:{1}", self.uri, self.port)));
         let options = mqtt::ConnectOptionsBuilder::new()
             .clean_session(true)
             .finalize();
 
         self.client
-            .connect(options)
+            .connect(options).await
             .expect("Error connecting to MQTT broker");
     }
 
-    pub fn disconnect(&self) {
+    pub async fn disconnect(&self) {
         log::info!("Disconnecting to MQTT broker...");
         self.client
-            .disconnect(DisconnectOptions::default())
+            .disconnect(DisconnectOptions::default()).await
             .expect("Error disconnecting from MQTT broker");
     }
 
-    pub fn publish(&self, topic: String, msg: String) {
+    pub async fn publish(&self, topic: String, msg: String) {
         log::info!("Publishing message to MQTT broker...");
         let full_topic = String::from(format!("{0}/{1}", self.client_name, topic));
-        self.client.publish(mqtt::Message::new(full_topic, msg, self.qos))
+        self.client.publish(mqtt::Message::new(full_topic, msg, self.qos)).await
             .expect("Error publishing message to MQTT broker");
     }
 
-    pub fn subscribe(&self) {
+    pub async fn subscribe(&self, topics: Vec<String>) {
         log::info!("Subscribing to MQTT broker...");
-        todo!("Subscribe to MQTT broker")
+        let mut full_topics: Vec<String> = Vec::new();
+        let mut qos = Vec::new();
+        for topic in topics {
+            full_topics.push(String::from(format!("{0}/{1}", self.client_name, topic)));
+            qos.push(self.qos);
+        }
+        self.client.subscribe_many(&full_topics, &qos).await
+            .expect("Error subscribing to MQTT broker");
+    }
+
+    pub async fn start_consuming(&self) -> mqtt::Receiver<Option<Message>> {
+        log::info!("Starting to consume messages from MQTT broker...");
+        return self.client.start_consuming();
     }
 
     pub fn unsubscribe(&self) {
         log::info!("Unsubscribing from MQTT broker...");
         todo!("Unsubscribe from MQTT broker")
     }
+
+    // pub async fn set_message_callback(&self, callback: fn(Message)) {
+    //     log::info!("Setting callback for MQTT broker...");
+    //     self.client.set_message_callback(callback);
+    // }
 
 }

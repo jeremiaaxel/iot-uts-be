@@ -34,7 +34,7 @@ pub async fn mqtt_publish(mut _req: Request<State>) -> tide::Result {
     
     let topic = String::from(format!("server_{0}_{1}", device.device_type.to_string(), device.device_id));
     
-    _req.state().mqtt.publish(topic, serde_json::to_string(&device_status)?);
+    _req.state().mqtt.publish(topic, serde_json::to_string(&device_status)?).await;
     
     let res = Response::new(200);
     Ok(res)

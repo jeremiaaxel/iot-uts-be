@@ -1,4 +1,6 @@
 mod routes;
+use std::thread;
+
 use routes::register_routes;
 
 mod controllers;
@@ -30,7 +32,7 @@ async fn main() -> tide::Result<()> {
 
     // MQTT
     let mqtt = Mqtt::new();
-    mqtt.connect();
+    mqtt.connect().await;
     
     let tera = TEMPLATES;
 
@@ -47,7 +49,7 @@ async fn main() -> tide::Result<()> {
     
     // App done
     // MQTT
-    mqtt.disconnect();
+    mqtt.disconnect().await;
 
     Ok(())
 }
