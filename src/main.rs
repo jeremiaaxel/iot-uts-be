@@ -1,10 +1,8 @@
 mod routes;
-use std::collections::VecDeque;
 use routes::register_routes;
 
 mod controllers;
 
-use structs::device::DeviceType;
 use tera::Tera;
 use tide::log;
 
@@ -13,8 +11,6 @@ use structs::state::State;
 use structs::mqtt::Mqtt;
 
 use lazy_static::lazy_static;
-
-use crate::structs::device_status::DeviceStatus;
 
 lazy_static! {
     #[derive(Clone, Copy)]

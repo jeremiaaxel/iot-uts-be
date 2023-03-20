@@ -1,7 +1,6 @@
-use std::collections::VecDeque;
 
 use crate::TEMPLATES;
-use super::{mqtt::Mqtt, device_status::DeviceStatus};
+use super::{mqtt::Mqtt};
 
 #[derive(Clone)]
 pub struct State {

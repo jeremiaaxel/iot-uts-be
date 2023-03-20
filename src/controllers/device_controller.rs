@@ -12,6 +12,7 @@ pub async fn detail(mut _req: Request<State>) -> tide::Result {
     let device_type: String = _req.param("device_type")?.parse().unwrap();
     let device_id: i32 = _req.param("device_id")?.parse().unwrap();
     let device: Device = DEVICES.to_vec().into_iter().find(|device| device.device_type.to_string().to_lowercase() == device_type && device.device_id == device_id).unwrap();
+    let device_state = DEVICES_STATUS.lock().await.iter().find(|device| device.device_type.to_string().to_lowercase() == device_type && device.device_id == device_id).unwrap().clone();
 
     let publish_url = String::from(format!("{0}/publish", device.device_url.clone()));
     
@@ -19,6 +20,7 @@ pub async fn detail(mut _req: Request<State>) -> tide::Result {
     tera.render_response("device/detail.html", &context! { 
         "title" => device.device_name,
         "device" => device,
+        "device_state" => device_state,
         "url" => publish_url,
     })
 }
