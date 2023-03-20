@@ -1,10 +1,10 @@
 mod routes;
-use std::thread;
-
+use std::collections::VecDeque;
 use routes::register_routes;
 
 mod controllers;
 
+use structs::device::DeviceType;
 use tera::Tera;
 use tide::log;
 
@@ -13,6 +13,8 @@ use structs::state::State;
 use structs::mqtt::Mqtt;
 
 use lazy_static::lazy_static;
+
+use crate::structs::device_status::DeviceStatus;
 
 lazy_static! {
     #[derive(Clone, Copy)]
@@ -36,12 +38,12 @@ async fn main() -> tide::Result<()> {
     
     let tera = TEMPLATES;
 
-    // App
     let state = State { 
         tera:tera, 
-        mqtt:mqtt.clone() 
+        mqtt:mqtt.clone(),
     };
-    
+
+    // App
     let mut app = tide::with_state(state);
     register_routes(&mut app);
     let listen_to = std::env::var("WEB_URI").unwrap() + ":" + &std::env::var("WEB_PORT").unwrap();

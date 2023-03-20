@@ -6,6 +6,7 @@
 
 {% block content %}
 <section name="devices-list" class="container my-5 d-flex flex-column">
+    <h2>Devices available:</h2>
     {% for device in devices %}
     <div name="device-item" class="d-flex flex-row bg-light p-5 mt-4 justify-content-between">
         <h3>{{ device.device_name }}</h3>

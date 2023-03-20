@@ -8,7 +8,7 @@ pub struct Mqtt {
     client_name: String,
     uri: String,
     port: String,
-    client: mqtt::AsyncClient,
+    pub client: mqtt::AsyncClient,
     qos: i32,
 }
 
@@ -56,8 +56,8 @@ impl Mqtt {
             .expect("Error publishing message to MQTT broker");
     }
 
-    pub async fn subscribe(&self, topics: Vec<String>) {
-        log::info!("Subscribing to MQTT broker...");
+    pub async fn subscribe_many(&self, topics: Vec<String>) {
+        log::info!("Subscribing to MQTT broker topics...");
         let mut full_topics: Vec<String> = Vec::new();
         let mut qos = Vec::new();
         for topic in topics {
@@ -77,10 +77,4 @@ impl Mqtt {
         log::info!("Unsubscribing from MQTT broker...");
         todo!("Unsubscribe from MQTT broker")
     }
-
-    // pub async fn set_message_callback(&self, callback: fn(Message)) {
-    //     log::info!("Setting callback for MQTT broker...");
-    //     self.client.set_message_callback(callback);
-    // }
-
 }

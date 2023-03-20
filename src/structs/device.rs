@@ -1,7 +1,7 @@
 use tide::prelude::*;
 use lazy_static::lazy_static;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum DeviceType {
     Light,
     AirConditioner

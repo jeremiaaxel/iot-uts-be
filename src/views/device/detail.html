@@ -52,6 +52,8 @@
 <script>
     $(document).ready(function () {
         let state = {
+            device_id: parseInt("{{ device.device_id }}"),
+            device_type: "{{ device.device_type }}",
             status: "Off",
             temperature: 16,
             is_timer_on: false,
@@ -73,6 +75,8 @@
                 url: "{{ url|safe }}",
                 type: "POST",
                 data: {
+                    device_type: state.device_type,
+                    device_id: state.device_id,
                     status: state.status,
                     temperature: state.temperature,
                     is_timer_on: state.is_timer_on,
