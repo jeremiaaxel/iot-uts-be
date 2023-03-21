@@ -31,7 +31,8 @@
         <div class="timer-control">
             <!-- On timer -->
             <div class="d-flex flex-row justify-content-sm-start justify-content-between mt-2 align-items-center">
-                <input type="time" name="timer-on-setter" id="timer-on-setter" value="{{ device_state.timer_on }}">
+                <label for="timer-on-setter">Timer ON</label>
+                <input type="time" name="timer-on-setter" class="ms-2" id="timer-on-setter" value="{{ device_state.timer_on }}">
                 <div class="form-check form-switch ms-2">
                     <input class="form-check-input" type="checkbox" role="switch" id="timer-on-switch" {% if device_state.is_timer_on %} checked {% endif %}>
                 </div>
@@ -39,7 +40,8 @@
 
             <!-- Off timer -->
             <div class="d-flex flex-row justify-content-sm-start justify-content-between mt-2 align-items-center">
-                <input type="time" name="timer-off-setter" id="timer-off-setter" value="{{ device_state.timer_off }}">
+                <label for="timer-off-setter">Timer OFF</label>
+                <input type="time" name="timer-off-setter" class="ms-2" id="timer-off-setter" value="{{ device_state.timer_off }}">
                 <div class="form-check form-switch ms-2">
                     <input class="form-check-input" type="checkbox" role="switch" id="timer-off-switch" {% if device_state.is_timer_off %} checked {% endif %}>
                 </div>
