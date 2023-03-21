@@ -21,9 +21,9 @@
         </button>
         {% if device.device_type == "AirConditioner" %}
         <div class="temp-control mt-2">
-            <section id="temperature-control" class="d-flex flex-row align-items-center">
+            <section id="temperature-control" class="d-flex flex-row align-items-center justify-content-evenly justify-content-sm-start">
                 <button type="button" id="temp-decrease-btn" class="btn btn-outline-secondary">-</button>
-                <div id="temp">{{ device_state.temperature }}</div>
+                <div id="temp" class="mx-2">{{ device_state.temperature }}</div>
                 <button type="button" id="temp-increase-btn" class="btn btn-outline-secondary">+</button>
             </section>
         </div>
