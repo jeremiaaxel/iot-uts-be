@@ -14,12 +14,13 @@
         <a href="/" class="btn btn-secondary">Back</a>
     </nav>
     <h2 class="mt-3">{{ device.device_name }}</h2>
-    <div id="controls" class="d-flex flex-column justify-content-between">
-        <button id="device-toggle-btn" class="state-control btn btn-primary d-flex flex-column justify-content-center align-self-sm-start">
+    <section id="on-duration-text">has been turned on for : <span id="on-duration">0</span></section>
+    <div id="controls" class="d-flex flex-column justify-content-between mt-2">
+        <button id="device-toggle-btn" class="state-control btn btn-outline-secondary d-flex flex-column justify-content-center align-self-sm-start">
             {{ device_state.status }}
         </button>
         {% if device.device_type == "AirConditioner" %}
-        <div class="temp-control mt-5">
+        <div class="temp-control mt-2">
             <section id="temperature-control" class="d-flex flex-row align-items-center">
                 <button type="button" id="temp-decrease-btn" class="btn btn-outline-secondary">-</button>
                 <div id="temp">{{ device_state.temperature }}</div>
@@ -59,19 +60,78 @@
             is_timer_on: "{{ device_state.is_timer_on }}" == "true",
             is_timer_off: "{{ device_state.is_timer_off }}" == "true",
             timer_on: "{{ device_state.timer_on }}",
-            timer_off: "{{ device_state.timer_off }}"
+            timer_off: "{{ device_state.timer_off }}",
+            last_updated: new Date("{{ device_state.last_updated }}")
         }
-        
         console.log(state);
-
+        
         const deviceToggleBtn = "#device-toggle-btn";
         const temp = "#temp";
         const tempDecreaseBtn = "#temp-decrease-btn";
         const tempIncreaseBtn = "#temp-increase-btn";
+        const timerOnSetter = "#timer-on-setter";
+        const timerOffSetter = "#timer-off-setter";
         const timerOnSwitch = "#timer-on-switch";
         const timerOffSwitch = "#timer-off-switch";
 
+        const durationText = "#on-duration-text";
+        const duration = "#on-duration";
+
         const isAircon = "{{ device.device_type}}" == "AirConditioner";
+
+        function getDurationText(date1, date2) {
+            let diffMs = Math.abs(date1 - date2);
+            var diffDays = Math.floor(diffMs / 86400000); // days
+            var diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+            var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+            let durationStr = "";
+            if (diffDays > 0) {
+                durationStr += `${diffDays} day`;
+                if (diffDays > 1) {
+                    durationStr += "s";
+                }
+            }
+            if (diffHrs > 0) {
+                durationStr += `${diffHrs} hour`;
+                if (diffHrs > 1) {
+                    durationStr += "s";
+                }
+            }
+            if (diffMins > 0) {
+                durationStr += `${diffMins} minute`;
+                if (diffMins > 1) {
+                    durationStr += "s";
+                }
+            }
+            if (durationStr == "") {
+                return "0";
+            }
+            return durationStr;
+        }
+
+        function initState(state) {
+
+            $(deviceToggleBtn).text(state.status);
+            if (state.status == "On") {
+                $(deviceToggleBtn).removeClass("btn-outline-secondary");
+                $(deviceToggleBtn).addClass("btn-primary");
+                $(durationText).css('visibility', 'visible');
+                $(duration).text(getDurationText(new Date(), state.last_updated));
+            } else {
+                $(deviceToggleBtn).removeClass("btn-primary");
+                $(deviceToggleBtn).addClass("btn-outline-secondary");
+                $(durationText).css('visibility', 'hidden');
+            }
+            if (isAircon) {
+                $(temp).text(state.temperature);
+            }
+            $(timerOnSwitch).prop("checked", state.is_timer_on);
+            $(timerOffSwitch).prop("checked", state.is_timer_off);
+            $(timerOnSetter).val(state.timer_on);
+            $(timerOffSetter).val(state.timer_off);
+        }
+        initState(state);
+
         function publishStatus(callback) {
             $.ajax({
                 url: "{{ url|safe }}",
@@ -84,7 +144,7 @@
                     is_timer_on: state.is_timer_on,
                     is_timer_off: state.is_timer_off,
                     timer_on: state.timer_on,
-                    timer_off: state.timer_off
+                    timer_off: state.timer_off,
                 },
                 success: function (response) {
                     callback(response);
@@ -103,6 +163,16 @@
 
                 publishStatus(function(response) {
                     $(deviceToggleBtn).text(newStatus);
+                    $(deviceToggleBtn).toggleClass("btn-primary");
+                    $(deviceToggleBtn).toggleClass("btn-outline-secondary");
+ 
+                    if (newStatus == "On") {
+                        $(durationText).css('visibility', 'visible');
+                        $(duration).text(getDurationText(new Date(), new Date()));
+                    } else {
+                        $(durationText).css('visibility', 'hidden');
+                    }
+
                 });
             });
         }
@@ -147,10 +217,7 @@
                 let timer = $(`#timer-${timerType.toLowerCase()}-setter`).val();
                 state[`timer_${timerType.toLowerCase()}`] = timer;
                 state[`is_timer_${timerType.toLowerCase()}`] = isChecked;
-                publishStatus(function (response) {
-                    $(`#timer-${timerType.toLowerCase()}-show`).text(timer);
-                    $(`#timer-${timerType.toLowerCase()}-modal`).modal("hide");
-                });
+                publishStatus(function (response) {});
             });
         }
         setTimer(timerOnSwitch, "On");

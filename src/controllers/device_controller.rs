@@ -38,7 +38,8 @@ pub async fn mqtt_publish(mut _req: Request<State>) -> tide::Result {
     // Yeah, it's bad, it is.
     for device_stat in DEVICES_STATUS.lock().await.iter_mut() {
         if device_stat.device_id == device_id && device_stat.device_type.to_string().to_lowercase() == device_type {
-            device_stat.clone_from_other(device_status.clone());
+            device_stat.clone_from_no_lu(device_status.clone());
+            log::info!("{:?}", device_stat);
             break;
         }
     }
